@@ -1,0 +1,49 @@
+{
+  "identifier": "default",
+  "description": "Default permissions",
+  "local": true,
+  "remote": {
+    "urls": [
+      "https://discord.com/*",
+      "https://*.discord.com/*"
+    ]
+  },
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
+  "windows": [
+    "main",
+    "splash"
+  ],
+  "permissions": [
+    "core:path:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-start-dragging",
+    "core:webview:default",
+    "core:webview:allow-set-webview-zoom",
+    "shell:default",
+    "process:default",
+    "autostart:default",
+    "deep-link:default",
+    "window-state:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://**/*"
+        },
+        {
+          "url": "http://**/*"
+        }
+      ]
+    }
+  ]
+}

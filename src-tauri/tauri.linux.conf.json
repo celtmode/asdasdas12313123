@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "resources": [
+      "injection/shelter.js",
+      "icons/icon*.ico",
+      "extension_webkit/libextension.so"
+    ]
+  }
+}

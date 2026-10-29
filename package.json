@@ -1,0 +1,35 @@
+{
+  "name": "parscord",
+  "version": "6.14.0",
+  "type": "module",
+  "scripts": {
+    "build:js": "vite build && esbuild --bundle --minify --target=es6 --outfile=src-tauri/injection/postinject_min.js src-tauri/injection/postinject.ts && esbuild --bundle --minify --target=es6 --outfile=src-tauri/injection/preinject_min.js src-tauri/injection/preinject.ts",
+    "dev": "pnpm build:js && tauri dev",
+    "build:updater": "cd updater && cargo build --release && cd .. && cp updater/target/release/updater src-tauri/updater",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "format": "cargo fmt --manifest-path ./src-tauri/Cargo.toml --all && prettier src -w",
+    "format:updater": "cargo fmt --manifest-path ./updater/Cargo.toml --all",
+    "lint": "eslint ./src-tauri/injection/**/*.ts",
+    "clippy": "cargo clippy --manifest-path ./src-tauri/Cargo.toml --no-default-features -- -D warnings",
+    "clippy:updater": "cargo clippy --manifest-path ./updater/Cargo.toml --no-default-features -- -D warnings",
+    "codefix": "pnpm format && pnpm clippy && pnpm lint --fix",
+    "codefix:updater": "pnpm format:updater && pnpm clippy:updater",
+    "codefix:all": "pnpm codefix && pnpm codefix:updater",
+    "shupdate": "curl -L https://raw.githubusercontent.com/uwu/shelter-builds/main/shelter.js -o src-tauri/injection/shelter.js"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/js": "^9.39.5",
+    "@tauri-apps/cli": "^2.11.4",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5"
+  },
+  "packageManager": "pnpm@12.4.1"
+}

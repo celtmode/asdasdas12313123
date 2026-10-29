@@ -1,0 +1,167 @@
+/* ==========================================================================
+   ParsCord "Gilded" (black & gold) theme + upstream layout fixes.
+   The design tokens live first so every rule below can rely on them.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark !important;
+
+  /*
+   * ParsCord black & gold palette.
+   * The legacy --parscord-gold-* names are kept as aliases so themes and
+   * plugins that still reference them keep resolving.
+   */
+  --pc-gold: #d7b665;
+  --pc-gold-bright: #f0d9a0;
+  --pc-gold-deep: #a88a4a;
+  --pc-void: #080705;
+  --pc-panel: #12100b;
+
+  --parscord-gold: var(--pc-gold);
+  --parscord-gold-bright: var(--pc-gold-bright);
+  --parscord-gold-muted: var(--pc-gold-deep);
+  --parscord-black: var(--pc-void);
+  --parscord-panel: var(--pc-panel);
+
+  --brand-500: var(--pc-gold) !important;
+  --brand-experiment: var(--pc-gold) !important;
+  --brand-experiment-560: #b8954e !important;
+  --brand-experiment-530: var(--pc-gold) !important;
+  --brand-experiment-500: var(--pc-gold) !important;
+  --brand-experiment-360: var(--pc-gold-bright) !important;
+  --brand-experiment-30: rgba(215, 182, 101, 0.14) !important;
+  --background-base-lowest: #050403 !important;
+  --background-base-lower: #080604 !important;
+  --background-base-low: #0e0b07 !important;
+  --background-base-accent: #14100a !important;
+  --background-surface-high: #17130d !important;
+  --background-surface-higher: #1c1711 !important;
+  --background-surface-highest: #231d14 !important;
+  --text-primary: #f4ecdc !important;
+  --text-secondary: #cbbfa8 !important;
+  --text-muted: #93876f !important;
+  --text-link: #e8cf92 !important;
+  --interactive-active: var(--pc-gold-bright) !important;
+  --interactive-hover: var(--pc-gold) !important;
+  --control-brand-foreground: #191207 !important;
+  --control-brand-foreground-new: #191207 !important;
+}
+
+html,
+body,
+#app-mount {
+  background-color: var(--pc-void) !important;
+  color: var(--text-primary);
+}
+
+::selection {
+  background: rgba(215, 182, 101, 0.32);
+  color: #fff7e2;
+}
+
+:focus-visible {
+  outline-color: var(--pc-gold-bright) !important;
+}
+
+a,
+[class*="anchor_"] {
+  color: var(--text-link) !important;
+  transition: color 180ms ease;
+}
+
+a:hover,
+[class*="anchor_"]:hover {
+  color: #ffe9b0 !important;
+}
+
+button,
+[role="button"],
+[role="tab"] {
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+button[class*="lookFilled"][class*="colorBrand"],
+[class*="lookFilled"][class*="colorBrand"] {
+  border-color: #c8a755 !important;
+  background-color: var(--pc-gold) !important;
+  color: #191207 !important;
+}
+
+button[class*="lookFilled"][class*="colorBrand"]:hover,
+[class*="lookFilled"][class*="colorBrand"]:hover {
+  background-color: var(--pc-gold-bright) !important;
+  box-shadow: 0 0 18px rgba(215, 182, 101, 0.18);
+}
+
+[aria-selected="true"],
+[aria-current="page"],
+[class*="selected_"] {
+  --interactive-active: var(--pc-gold-bright) !important;
+}
+
+[class*="sidebar"],
+[class*="panels"],
+[class*="membersWrap"],
+[class*="chatContent"],
+[class*="containerDefault"] {
+  border-color: rgba(215, 182, 101, 0.09) !important;
+}
+
+[class*="mention"] {
+  background-color: rgba(215, 182, 101, 0.14) !important;
+  color: #f1d995 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent !important;
+  border-radius: 0 !important;
+  background-color: #5b4a2a !important;
+  background-clip: padding-box !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8a6f3a !important;
+}
+
+/* ==========================================================================
+   Upstream layout fixes (kept from the original extra.css)
+   ========================================================================== */
+
+ul[data-list-id="guildsnav"]
+  div[class*="itemsContainer_"]
+  > div
+  > div[class*="listItem_"]:nth-last-child(2) {
+  display: none !important;
+}
+
+div[class*="userProfileOuter"] {
+  --custom-user-popout-outside-components-height: 30px;
+}
+
+div[class*="inlineMediaEmbed_"] div[class*="imageContainer_"] {
+  /*
+   * For some reason, the height will stay zero until we apply another height.
+   * Then, even if we remove the height property again, the height stays the same.
+   */
+  max-height: 450px;
+}
+
+html:not([data-dorion-platform="macos"]) div[class^="base"] > div[class^="bar_"] {
+  z-index: 9999;
+  background-color: var(--background-base-lowest);
+}
+
+html,
+body,
+#app-mount {
+  /**
+   * Prevent viewport overscroll when pasting multiline text. #389
+   */
+  overflow: hidden !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overscroll-behavior: none !important;
+}
