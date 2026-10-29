@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <h1 align="center">
  <img height="100px" src="https://raw.githubusercontent.com/SpikeHD/Dorion/main/src-tauri/icons/icon.png" />
  <br />
@@ -427,3 +428,6 @@ Theme: [OldCord](https://betterdiscord.app/theme/OldCord)
 
 Theme: [Fluent](https://betterdiscord.app/theme/Fluent)
 "# ParsCode" 
+=======
+# ParsCode
+>>>>>>> ffb9ff8a202ce726259de1c3cbcefd089844076e
