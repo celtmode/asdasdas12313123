@@ -19,25 +19,26 @@
   }
 
   #loadingContainer {
-    width: 500px;
+    width: 380px;
     height: auto;
-    min-height: 400px;
-    padding: 24px;
-    border-radius: 16px;
-    border: 1px solid rgba(215, 182, 101, 0.2);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(215, 182, 101, 0.1);
+    min-height: 280px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(215, 182, 101, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(215, 182, 101, 0.08);
 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
-    background: var(--pc-panel);
+    background: rgba(26, 24, 18, 0.95);
+    backdrop-filter: blur(10px);
     color: var(--pc-gold-primary);
     font-family: "Segoe UI", "SF Pro Display", "Inter", sans-serif;
 
     opacity: 1;
-    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   #loadingContainer.is-leaving {
