@@ -1,0 +1,33 @@
+/* ==========================================================================
+   ParsCord Loading Screen Styles
+   Simplified, elegant, gold & black theme
+   ========================================================================== */
+
+/* Loading Screen Container */
+#loadingContainer {
+  /* Keep existing styles from inline CSS */
+}
+
+/* Prevent Discord from capturing the keyboard globally */
+body {
+  overflow: hidden !important;
+}
+
+/* Make sure the loading screen handles focus properly */
+#loadingContainer:focus {
+  outline: none;
+}
+
+/* Ensure smooth transitions */
+#loadingContainer * {
+  transition-property: opacity, transform, box-shadow;
+  transition-duration: 400ms, 400ms, 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #loadingContainer {
+    padding: 20px !important;
+  }
+}
