@@ -108,16 +108,8 @@ async function init() {
   const { event, app } = window.__TAURI__
   const { invoke } = window.__TAURI__.core
 
-  // Show the boot screen before any network work (loading client mods,
-  // themes and plugins can take several seconds). The window is already
-  // visible by then, so waiting would leave the user staring at black.
-  try {
-    await waitForDom()
-
-    if (await shouldShowSplash()) await displayLoadingTop()
-  } catch (e) {
-    console.error('Failed to show the loading screen', e)
-  }
+  // Native splash window handles the loading UI, no web-based overlay needed
+  await waitForDom()
 
   safemodeTimer(
     document.querySelector('#safemode') as HTMLDivElement
@@ -171,24 +163,40 @@ async function init() {
     updateOverlay({
       logs: log
     })
+    // Also update native splash progress based on log content
+    if (log.includes('Connecting')) {
+      invoke('update_splash_progress', { progress: 15 }).catch(() => {})
+    } else if (log.includes('Auth')) {
+      invoke('update_splash_progress', { progress: 30 }).catch(() => {})
+    } else if (log.includes('Session')) {
+      invoke('update_splash_progress', { progress: 50 }).catch(() => {})
+    } else if (log.includes('Sync')) {
+      invoke('update_splash_progress', { progress: 75 }).catch(() => {})
+    }
   })
 
   let themeJs = await handleClientModThemeInjection()
+  invoke('update_splash_progress', { progress: 20 }).catch(() => {})
   themeJs += await handleThemeInjection()
+  invoke('update_splash_progress', { progress: 45 }).catch(() => {})
 
   updateOverlay({
     midtitle: 'Getting injection JS...'
   })
+  invoke('update_splash_progress', { progress: 65 }).catch(() => {})
 
   const injectionJs = await invoke('get_injection_js', {
     themeJs,
   })
+
+  invoke('update_splash_progress', { progress: 85 }).catch(() => {})
 
   saferEval(injectionJs)
 
   updateOverlay({
     midtitle: 'Done!'
   })
+  invoke('update_splash_progress', { progress: 95 }).catch(() => {})
 
   // Keep the splash visible until Discord has rendered its login or main interface.
   const loadingContainer = document.querySelector('#loadingContainer') as HTMLDivElement | null
@@ -212,6 +220,7 @@ async function init() {
   }
 
   setProgress(100, 'Ready')
+  invoke('update_splash_progress', { progress: 100 }).catch(() => {})
   updateOverlay({ midtitle: 'Ready', logs: 'Interface ready - opening Discord...' })
   await timeout(500)
   loadingContainer.classList.add('is-ready')
@@ -510,10 +519,6 @@ async function handleClientModThemeInjection() {
   })()`
 }
 
-/**
- * The splash belongs to the main window. Popout windows still receive the rest
- * of the injection, but they should not be covered by a boot screen.
- */
 async function shouldShowSplash() {
   try {
     const winApi = (window.__TAURI__ as {
@@ -528,93 +533,12 @@ async function shouldShowSplash() {
 }
 
 /**
- * A tiny black/gold screen painted before the compiled splash arrives.
- * It guarantees the app never shows Discord's own boot screen first.
- */
-const FALLBACK_SPLASH = `
-  <div style="position:fixed;inset:0;display:grid;place-items:center;background:#070604;color:#f2e4c0;font-family:'Segoe UI',system-ui,sans-serif">
-    <div style="text-align:center">
-      <div style="font-size:34px;font-weight:700;letter-spacing:-0.03em;color:#f7e7b5">ParsCord</div>
-      <div style="margin-top:10px;font-size:10px;letter-spacing:0.4em;color:#c9a85a">LOADING DISCORD</div>
-      <div style="width:220px;height:4px;margin:18px auto 0;border-radius:99px;background:rgba(215,182,101,.16);overflow:hidden">
-        <div style="height:100%;width:6%;border-radius:99px;background:linear-gradient(90deg,#a88a4a,#f7e7b5);animation:pc-fallback 10s linear forwards"></div>
-      </div>
-      <style>@keyframes pc-fallback{from{width:6%}to{width:98%}}</style>
-    </div>
-  </div>
-`
-
-/**
- * Keep the overlay in the browser's top layer. Discord renders its own boot
- * screen after the initialization script runs, so a high z-index alone can
- * still lose to it.
- */
-function keepSplashOnTop(el: HTMLDivElement) {
-  if (typeof el.showPopover === 'function') {
-    try {
-      el.setAttribute('popover', 'manual')
-      el.showPopover()
-      return
-    } catch (_e) {
-      el.removeAttribute('popover')
-    }
-  }
-
-  // Fallback for webviews without the Popover API: stay last in <body>.
-  const pin = window.setInterval(() => {
-    if (!el.isConnected) {
-      window.clearInterval(pin)
-      return
-    }
-
-    if (document.body.lastElementChild !== el) document.body.appendChild(el)
-  }, 750)
-}
-
-/**
  * Display the splashscreen
+ * Now uses native Rust splash window instead of web-based overlay
  */
 async function displayLoadingTop() {
-  // Check if native splash window is already active (splash.rs creates it before main window)
-  // If so, skip the web-based loading to avoid conflicts
-  try {
-    const winApi = (window.__TAURI__ as {
-      window?: { getCurrentWindow?: () => { label?: string } }
-    }).window
-    const label = winApi?.getCurrentWindow?.().label
-
-    // If we're in the main window and native splash might be active, don't add web-based loading
-    if (label === 'main') {
-      console.log('Native splash window is active, skipping web-based loading')
-      return
-    }
-  } catch (_e) {
-    // If we can't determine the label, proceed with web-based loading as fallback
-  }
-
-  const { invoke } = window.__TAURI__.core
-  const loadingContainer = document.createElement('div') satisfies HTMLDivElement
-  loadingContainer.id = 'loadingContainer'
-  loadingContainer.innerHTML = FALLBACK_SPLASH
-
-  loadingContainer.style.zIndex = '2147483647'
-  loadingContainer.style.position = 'fixed'
-  loadingContainer.style.inset = '0'
-  loadingContainer.style.width = '100%'
-  loadingContainer.style.height = '100%'
-  loadingContainer.style.margin = '0'
-  loadingContainer.style.border = '0'
-  loadingContainer.style.padding = '0'
-
-  document.body.appendChild(loadingContainer)
-  keepSplashOnTop(loadingContainer)
-
-  // Swap in the real animated splash as soon as the compiled markup arrives.
-  try {
-    const html = await invoke('get_index')
-
-    if (html && loadingContainer.isConnected) loadingContainer.innerHTML = html
-  } catch (e) {
-    console.error('Failed to load the splash markup', e)
-  }
+  // Native splash window (from splash.rs) is created before main window shows
+  // Skip web-based loading entirely to avoid conflicts
+  console.log('Using native splash window, skipping web-based loading')
+  return
 }

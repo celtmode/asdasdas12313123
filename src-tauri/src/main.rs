@@ -94,6 +94,12 @@ fn finish_splash(app: tauri::AppHandle) {
   }
 }
 
+/// Update the native splash window progress (0-100).
+#[tauri::command]
+fn update_splash_progress(app: tauri::AppHandle, progress: f32) {
+  functionality::splash::update_splash_progress(&app, progress.clamp(0.0, 100.0));
+}
+
 fn main() {
   if args::is_help() {
     return;
@@ -232,6 +238,7 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       should_disable_plugins,
       finish_splash,
+      update_splash_progress,
       git_hash,
       functionality::extension::extension_injected,
       functionality::window::minimize,
