@@ -5,7 +5,7 @@
 
 use tauri::{Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
-const SPLASH_HTML: &str = r#"
+const SPLASH_HTML: &str = r##"
 <!doctype html>
 <html lang="en">
 <head>
@@ -173,7 +173,7 @@ const SPLASH_HTML: &str = r#"
   </script>
 </body>
 </html>
-"#;
+"##;
 
 pub fn create(app: &tauri::App) -> tauri::Result<WebviewWindow> {
     let html = SPLASH_HTML.replace("__PC_VERSION__", env!("CARGO_PKG_VERSION"));
